@@ -8,6 +8,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '/client')));
 
 const messages = [];
+const users = [];
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname + '/client/index.html'));
@@ -21,12 +22,20 @@ const server = app.listen(port, () => console.log(`Server start on port ${port}`
 const io = socket(server);
 
 io.on('connection', (socket) => {
-  console.log('New client! Its id – ' + socket.id);
+  
+  socket.on('login', (userName) => {
+    users.push({id: socket.id, userName: userName.userName});
+    socket.broadcast.emit('message', {author: 'Chat Bot', content: `${userName.userName} has joined the conversation!`});
+  });
+
   socket.on('message', (message) => {
-    console.log('Oh, I\'ve got something from ' + socket.id);
     messages.push(message);
     socket.broadcast.emit('message', message);
   });
-  socket.on('disconnect', () => { console.log('Oh, socket ' + socket.id + ' has left') });
-  console.log('I\'ve added a listener on message event \n');
+
+  socket.on('disconnect', () => {
+    const user =  users[users.findIndex(user => user.id === socket.id)];
+    io.emit('message', {author: 'Chat Bot', content: `${user.userName} has left the conversation... :(`});
+    users.splice(users.findIndex(user => user.id === socket.id), 1);
+  });
 });

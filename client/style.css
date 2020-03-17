@@ -108,6 +108,10 @@ p {
   display: block;
 }
 
+.i {
+  font-style: italic; 
+}
+
 @-webkit-keyframes fadeIn {
   from {
     opacity: 0;
@@ -127,3 +131,4 @@ p {
     opacity: 1;
   }
 }
+

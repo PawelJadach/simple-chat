@@ -16,6 +16,7 @@ loginForm.addEventListener('submit', e => {
     userName = userNameInput.value;
     loginForm.classList.toggle('show');
     messagesSection.classList.toggle('show');
+    socket.emit('login', { userName: userName })
   } else alert('Wpisz dane!');
 });
 
@@ -37,9 +38,12 @@ const addMessage = (author, message) => {
   h3.classList.add('message__author');
   const div = document.createElement('div');
   div.classList.add('message__content');
+
   if(author === userName) h3.innerText = 'You'
-  else h3.innerText = author;
+  else h3.innerText = author
   div.innerText = message;
+
+  if(author === 'Chat Bot') div.classList.add('i');
   li.appendChild(h3);
   li.appendChild(div);
   messagesList.appendChild(li);

@@ -5,6 +5,8 @@ const addMessageForm = document.getElementById('add-messages-form');
 const userNameInput = document.getElementById('username');
 const messageContentInput = document.getElementById('message-content');
 
+const socket = io();
+socket.on('message', ({ author, content }) => addMessage(author, content)); //listener
 let userName = '';
 
 
@@ -21,6 +23,7 @@ addMessageForm.addEventListener('submit', e => {
   e.preventDefault();
   if(messageContentInput.value !== '') {
     addMessage(userName, messageContentInput.value);
+    socket.emit('message', { author: userName, content: messageContentInput.value })
     messageContentInput.value = '';
   }
   else alert('Wypełnij pole!');
@@ -34,7 +37,7 @@ const addMessage = (author, message) => {
   h3.classList.add('message__author');
   const div = document.createElement('div');
   div.classList.add('message__content');
-  if(author = userName) h3.innerText = 'You'
+  if(author === userName) h3.innerText = 'You'
   else h3.innerText = author;
   div.innerText = message;
   li.appendChild(h3);
